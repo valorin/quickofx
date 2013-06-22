@@ -2,11 +2,9 @@
 
 require_once __DIR__ ."/ParserAbstract.php";
 
-class StGeorge extends ParserAbstract
+class TabCredit extends ParserAbstract
 {
-    public $bankid  = "stgeorge";
-    public $accid   = 1;
-    public $acctype = "SAVINGS";
+    public $acctype = "CREDIT";
 
 
     /**
@@ -14,7 +12,8 @@ class StGeorge extends ParserAbstract
      */
     public function isValid($columns, $csv)
     {
-        $expected = array('Date', 'Description', 'Debit', 'Credit', 'Balance');
+        $columns  = implode(",", $columns);
+        $expected = "Date\tDescription\tDebit\tCredit";
 
         return ($expected == $columns);
     }
@@ -25,11 +24,17 @@ class StGeorge extends ParserAbstract
      */
     public function parse($columns, $csv)
     {
-        $columns = array_map('strtolower', $columns);
+        $columns = explode("\t", strtolower(implode(",", $columns)));
 
         $ofx = new OfxFormatter($this);
 
         foreach ($csv as $transaction) {
+            $transaction = explode("\t", implode(",", $transaction));
+
+            if (count($transaction) == 3) {
+                $transaction[] = 0;
+            }
+
             $transaction = array_combine($columns, $transaction);
             $ofx->addTransaction($transaction);
         }

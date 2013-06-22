@@ -3,7 +3,7 @@
 /**
  * Define parsers
  */
-$parsers = array('StGeorge');
+$parsers = array('SimpleSavings', 'SimpleCredit', 'TabCredit');
 
 foreach ($parsers as $key => $parser) {
     require_once __DIR__ ."/parsers/{$parser}.php";

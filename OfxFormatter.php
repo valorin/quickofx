@@ -39,11 +39,11 @@ class OfxFormatter
 
         if (isset($raw['debit']) && !empty($raw['debit'])) {
             $transaction['type']  = 'DEBIT';
-            $transaction['amount'] = 0 - $raw['debit'];
+            $transaction['amount'] = 0 - str_replace("$", "", $raw['debit']);
 
         } elseif (isset($raw['credit']) && !empty($raw['credit'])) {
             $transaction['type']  = 'CREDIT';
-            $transaction['amount'] = $raw['credit'];
+            $transaction['amount'] = str_replace("$", "", $raw['credit']);
         }
 
         if (isset($raw['balance']) && !empty($raw['balance'])) {
