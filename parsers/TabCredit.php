@@ -24,18 +24,20 @@ class TabCredit extends ParserAbstract
      */
     public function parse($columns, $csv)
     {
-        $columns = explode("\t", strtolower(implode(",", $columns)));
+        $columns = explode("\t", strtolower(implode("", $columns)));
 
         $ofx = new OfxFormatter($this);
 
         foreach ($csv as $transaction) {
-            $transaction = explode("\t", implode(",", $transaction));
+            $transaction = explode("\t", implode("", $transaction));
 
             if (count($transaction) == 3) {
                 $transaction[] = 0;
             }
 
+            $transaction = array_map("trim", $transaction);
             $transaction = array_combine($columns, $transaction);
+
             $ofx->addTransaction($transaction);
         }
 

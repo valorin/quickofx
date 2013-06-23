@@ -30,7 +30,7 @@ class OfxFormatter
 
 
         if (isset($raw['date']) && !empty($raw['date'])) {
-            $transaction['date'] = $raw['date'];
+            $transaction['date'] = $this->parseDate($raw['date']);
         }
 
         if (isset($raw['description']) && !empty($raw['description'])) {
@@ -134,4 +134,17 @@ OFX;
         return $output;
     }
 
+    /**
+     * Parses dates into a useful format
+     *
+     */
+    protected function parseDate($date)
+    {
+        // DD/MM/YYYY
+        if (preg_match("%\d\d/\d\d/\d\d\d\d%", $date)) {
+            return substr($date, 6).substr($date, 3, 2).substr($date, 0, 2);
+        }
+
+        return $date;
+    }
 }
