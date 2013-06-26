@@ -60,6 +60,8 @@ class OfxFormatter
      */
     public function generate()
     {
+        $this->sort();
+
         $transactions = "";
         foreach ($this->transactions as $row) {
             $transactions .= <<<OFX
@@ -113,17 +115,17 @@ NEWFILEUID:NONE
                     <ACCTTYPE>{$this->parser->acctype}
                 </BANKACCTFROM>
                 <BANKTRANLIST>
-                    <DTSTART>{$this->transactions[0]['date']}000000
-                    <DTEND>{$this->transactions[$last]['date']}000000
+                    <DTSTART>{$this->transactions[$last]['date']}000000
+                    <DTEND>{$this->transactions[0]['date']}000000
                     {$transactions}
                 </BANKTRANLIST>
                 <LEDGERBAL>
-                    <BALAMT>{$this->transactions[$last]['balance']}
-                    <DTASOF>{$this->transactions[$last]['date']}000000
+                    <BALAMT>{$this->transactions[0]['balance']}
+                    <DTASOF>{$this->transactions[0]['date']}000000
                 </LEDGERBAL>
                 <AVAILBAL>
-                    <BALAMT>{$this->transactions[$last]['balance']}
-                    <DTASOF>{$this->transactions[$last]['date']}000000
+                    <BALAMT>{$this->transactions[0]['balance']}
+                    <DTASOF>{$this->transactions[0]['date']}000000
                 </AVAILBAL>
             </STMTRS>
         </STMTTRNRS>
@@ -146,5 +148,31 @@ OFX;
         }
 
         return $date;
+    }
+
+
+    /**
+     * Sort Transactions
+     */
+    protected function sort()
+    {
+        $staging = array();
+        foreach ($this->transactions as $row) {
+            $key = $this->parseDate($row['date']).implode("-", $row);
+            $staging[$key] = $row;
+        }
+
+        krsort($staging);
+        $this->transactions = array_values($staging);
+
+        if (!$this->parser->balance) {
+            return;
+        }
+
+        $balance = $this->parser->balance;
+        foreach ($this->transactions as $key => $row) {
+            $this->transactions[$key]['balance'] = $balance;
+            $balance -= $row['amount'];
+        }
     }
 }

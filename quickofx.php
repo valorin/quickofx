@@ -35,6 +35,12 @@ foreach ($rawcsv as $row) {
 
 
 /**
+ * Check for extra options
+ */
+$balance = isset($_SERVER['argv'][2]) ? $_SERVER['argv'][2] : null;
+
+
+/**
  * Loop parsers
  */
 foreach ($parsers as $parserName) {
@@ -42,7 +48,7 @@ foreach ($parsers as $parserName) {
     /**
      * Create parser
      */
-    $parser = new $parserName();
+    $parser = new $parserName($balance);
 
 
     /**
