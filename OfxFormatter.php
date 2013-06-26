@@ -156,6 +156,11 @@ OFX;
      */
     protected function sort()
     {
+        if (!$this->parser->balance) {
+            $this->transactions = array_reverse($this->transactions);
+            return;
+        }
+
         $staging = array();
         foreach ($this->transactions as $row) {
             $key = $this->parseDate($row['date']).implode("-", $row);
@@ -164,10 +169,6 @@ OFX;
 
         krsort($staging);
         $this->transactions = array_values($staging);
-
-        if (!$this->parser->balance) {
-            return;
-        }
 
         $balance = $this->parser->balance;
         foreach ($this->transactions as $key => $row) {
